@@ -1,11 +1,14 @@
-FROM alpine:3.6
-LABEL maintainer "Adrian B. Danieli - https://github.com/sickp"
+FROM docker.io/fedora
+MAINTAINER http://fedoraproject.org/wiki/Cloud
 
-COPY rootfs /
-
-RUN apk add --no-cache openssh \
-  && sed -i s/#PermitRootLogin.*/PermitRootLogin\ yes/ /etc/ssh/sshd_config \
-  && echo "root:root" | chpasswd
+# Atomic RUN label, enables the atomic cli
+LABEL RUN='docker run --name ssh -d -p 2200:22 $IMAGE'
 
 EXPOSE 22
+
+RUN dnf -y update && dnf -y install openssh-server passwd && dnf clean all
+
+COPY entrypoint.sh /entrypoint.sh
+
 ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/usr/sbin/sshd", "-D"]
