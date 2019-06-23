@@ -93,6 +93,8 @@ services:
   networks:
     - prodnetwork
   build: ./slave
+  environment:
+   - SSH_USERPASS=password
   ports:
     - "2222:22"
 
